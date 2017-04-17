@@ -13,11 +13,10 @@ namespace BkTreeSpellChecker
             // BUILDING THE TREE
             BuildTree(bkTree);
 
-            var result = bkTree.SpellCheck("cae", 2);
+            var result = bkTree.SpellCheck("cke", 2);
             Console.WriteLine(result.GetResult());
             Console.ReadLine();
         }
-
 
         private static void BuildTree(BkTree.BkTree bkTree)
         {

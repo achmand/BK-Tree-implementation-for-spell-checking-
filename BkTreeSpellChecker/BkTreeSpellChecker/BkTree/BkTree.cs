@@ -1,4 +1,5 @@
-﻿using BkTreeSpellChecker.StringMetrics;
+﻿using System.Collections.Generic;
+using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker.BkTree
 {
@@ -10,9 +11,9 @@ namespace BkTreeSpellChecker.BkTree
         #region properties & variables
 
         private readonly IBkMetricSpace<string> _stringMetric;
+        private SpellCheckResult _spellCheckResult;
         private BkTreeNode<string> _root;
         private int _size;
-        private SpellCheckResult _spellCheckResult;
 
         #endregion
 
@@ -33,6 +34,8 @@ namespace BkTreeSpellChecker.BkTree
         }
 
         #endregion
+
+        #region public methods
 
         public int GetSize()
         {
@@ -67,7 +70,6 @@ namespace BkTreeSpellChecker.BkTree
 
         // returns the spell check result 
         // suggestions with a margin of error as specified,
-        // would be returned (only top 10)
         public SpellCheckResult SpellCheck(string word, int error)
         {
             if (_spellCheckResult == null)
@@ -75,16 +77,21 @@ namespace BkTreeSpellChecker.BkTree
                 _spellCheckResult = new SpellCheckResult();
             }
 
-            _spellCheckResult.ResetObject();
-            
+            _spellCheckResult.SetObject(word, error);
+
             word = word.ToLower();
             SearchTree(_root, _spellCheckResult, word, error);
             return _spellCheckResult;
         }
 
+        #endregion
+
+        #region private methods
+
         private void SearchTree(BkTreeNode<string> root, SpellCheckResult spellCheck, string word, int distance)
         {
-            if (spellCheck.Found) // word is found stop recurssion
+            // word is found stop recurssion
+            if (spellCheck.Found) 
             {
                 return;
             }
@@ -101,7 +108,14 @@ namespace BkTreeSpellChecker.BkTree
 
             if (currentDistance <= distance)
             {
-                spellCheck.Suggestions.Add(root.GetElement());
+                if (spellCheck.Suggestions.ContainsKey(currentDistance))
+                {
+                    spellCheck.Suggestions[currentDistance].Add(root.GetElement());
+                }
+                else
+                {
+                    spellCheck.Suggestions.Add(currentDistance, new List<string> { root.GetElement() });
+                }
             }
 
             if (root.GetChildren() == null)
@@ -120,5 +134,7 @@ namespace BkTreeSpellChecker.BkTree
                 SearchTree(node, spellCheck, word, distance);
             }
         }
+
+        #endregion
     }
 }
