@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker
@@ -7,18 +8,21 @@ namespace BkTreeSpellChecker
     {
         static void Main(string[] args)
         {
-            var bkTree = new BkTree.BkTree(new BkLevenshteinDistance());
-            bkTree.AddNode("book");
-            bkTree.AddNode("books");
-            bkTree.AddNode("boo");
-            bkTree.AddNode("boon");
-            bkTree.AddNode("cook");
-            bkTree.AddNode("cake");
-            bkTree.AddNode("cape");
-            bkTree.AddNode("cart");
+            var bkTree = new BkTree.BkTree(new BkLevenshteinDistance()); // using levenshtein distance as a string metric  
 
-            var result = bkTree.SpellCheck("boa", 2);
+            // BUILDING THE TREE
+            
+
+            var result = bkTree.SpellCheck("cae", 2);
+            Console.WriteLine(result.GetResult());
             Console.ReadLine();
+        }
+
+
+        private static void BuildTree(BkTree.BkTree bkTree)
+        {
+            var path = AppDomain.CurrentDomain.BaseDirectory;
+            path = path.Substring(0, path.IndexOf("bin", StringComparison.Ordinal)) + "TestData";
         }
     }
 }

@@ -42,7 +42,8 @@ namespace BkTreeSpellChecker.BkTree
         }
 
         // adds a new child node 
-        public void AddNode(int distance, BkTreeNode<T> node, IBkMetricSpace<T> bkMetricSpace)
+        // returns 0 if node is not added, 1 if added 
+        public int AddNode(int distance, BkTreeNode<T> node, IBkMetricSpace<T> bkMetricSpace)
         {
             if (Children == null)
             {
@@ -54,11 +55,18 @@ namespace BkTreeSpellChecker.BkTree
             {
                 var tmpNode = Children[distance];
                 distance = bkMetricSpace.GetDistance(tmpNode.GetElement(), node.GetElement());
+
+                if (distance == 0) // same word
+                {
+                    return 0; // not added
+                }
+
                 tmpNode.AddNode(distance, node, bkMetricSpace);
-                return;
+                return 1;
             }
 
             Children.Add(distance, node); // add the new node as a child
+            return 1;
         }
 
         #endregion
