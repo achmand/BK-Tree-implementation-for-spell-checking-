@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using BkTreeSpellChecker.StringMetrics;
 
@@ -94,7 +93,7 @@ namespace BkTreeSpellChecker.BkTree
         private void SearchTree(BkTreeNode<string> root, SpellCheckResult spellCheck, string word, int distance)
         {
             // word is found stop recurssion
-            if (spellCheck.Found) 
+            if (spellCheck.Found)
             {
                 return;
             }
@@ -117,7 +116,7 @@ namespace BkTreeSpellChecker.BkTree
                 }
                 else
                 {
-                    spellCheck.Suggestions.Add(currentDistance, new List<string> { root.GetElement() });
+                    spellCheck.Suggestions.Add(currentDistance, new List<string> {root.GetElement()});
                 }
             }
 
@@ -138,26 +137,28 @@ namespace BkTreeSpellChecker.BkTree
             }
         }
 
-        //public static void SaveTree(BkTree tree, string filename)
-        //{
-        //    using (Stream file = File.Open(filename, FileMode.Create))
-        //    {
-        //        var binaryFormatter = new BinaryFormatter();
-        //        binaryFormatter.Serialize(file, tree..Cast<TreeNode>().ToList());
-        //    }
-        //}
+        #endregion
 
-        //public static void LoadTree(BkTree tree, string filename)
-        //{
-        //    using (Stream file = File.Open(filename, FileMode.Open))
-        //    {
-        //        var bf = new BinaryFormatter();
-        //        var obj = bf.Deserialize(file);
+        #region static methods
 
-        //        var nodeList = (obj as IEnumerable<BkTreeNode<string>>).ToArray();
-        //        tree.Nodes.AddRange(nodeList);
-        //    }
-        //}
+        public static void SaveTree(BkTree tree, string filename)
+        {
+            using (Stream file = File.Open(filename, FileMode.Create))
+            {
+                var binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(file, tree._root);
+            }
+        }
+
+        public static void LoadTree(BkTree tree, string filename)
+        {
+            using (Stream file = File.Open(filename, FileMode.Open))
+            {
+                var binaryFormatter = new BinaryFormatter();
+                var node = binaryFormatter.Deserialize(file) as BkTreeNode<string>;
+                tree._root = node;
+            }
+        }
 
         #endregion
     }

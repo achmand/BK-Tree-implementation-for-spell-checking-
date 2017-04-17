@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker.BkTree
 {
-    // node used in the Bk tree
-    public class BkTreeNode<T>
+    [Serializable]
+    public class BkTreeNode<T> // node used in the Bk tree
     {
         #region properties & variables
 

@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="WordList\savedGraph.gp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="WordList\dictionary.txt" />

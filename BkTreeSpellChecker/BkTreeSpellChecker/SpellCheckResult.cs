@@ -47,7 +47,7 @@ namespace BkTreeSpellChecker
                 var i = 1;
                 var count = 0;
 
-                while (true)
+                while (true) // this will always iterate at most as the value of TotalSuggestions
                 {
                     if (Suggestions.ContainsKey(i))
                     {
