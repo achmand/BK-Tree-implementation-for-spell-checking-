@@ -141,6 +141,8 @@ namespace BkTreeSpellChecker.BkTree
 
         #region static methods
 
+        // TODO -> Serialize the whole tree instead of the root only as there are other properties which need to be persisted like size !!!
+
         public static void SaveTree(BkTree tree, string filename)
         {
             using (Stream file = File.Open(filename, FileMode.Create))
