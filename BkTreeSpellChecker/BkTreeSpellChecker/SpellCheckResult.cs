@@ -73,7 +73,7 @@ namespace BkTreeSpellChecker
                 }
             }
 
-            var result = $"Error margin {ErrorMargin}  Word '{Word}' is " + (Found ? "correct" : $"incorrect - top 10 suggestions: {string.Join(",", _wordsSuggested.Select(p => p))}");
+            var result = $"Error margin {ErrorMargin} & word '{Word}' is " + (Found ? "correct" : $"incorrect - top 10 suggestions: {string.Join(",", _wordsSuggested.Select(p => p))}");
             return result;
         }
 

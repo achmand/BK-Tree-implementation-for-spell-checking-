@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker.BkTree
@@ -134,6 +137,27 @@ namespace BkTreeSpellChecker.BkTree
                 SearchTree(node, spellCheck, word, distance);
             }
         }
+
+        //public static void SaveTree(BkTree tree, string filename)
+        //{
+        //    using (Stream file = File.Open(filename, FileMode.Create))
+        //    {
+        //        var binaryFormatter = new BinaryFormatter();
+        //        binaryFormatter.Serialize(file, tree..Cast<TreeNode>().ToList());
+        //    }
+        //}
+
+        //public static void LoadTree(BkTree tree, string filename)
+        //{
+        //    using (Stream file = File.Open(filename, FileMode.Open))
+        //    {
+        //        var bf = new BinaryFormatter();
+        //        var obj = bf.Deserialize(file);
+
+        //        var nodeList = (obj as IEnumerable<BkTreeNode<string>>).ToArray();
+        //        tree.Nodes.AddRange(nodeList);
+        //    }
+        //}
 
         #endregion
     }
