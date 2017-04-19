@@ -32,9 +32,9 @@ namespace BkTreeSpellChecker
 
         #region public methods
 
-        public void SetObject(string word, int error)
+        public void SetObject(int error, string word = null)
         {
-            ResetObject();
+            ResetObject(true);
             Word = word;
             ErrorMargin = error;
         }
@@ -69,7 +69,8 @@ namespace BkTreeSpellChecker
             var i = 1;
             var count = 0;
 
-            while (true) // this will always iterate at most as the value of TotalSuggestions
+            // this will always iterate at most as the value of TotalSuggestions
+            while (true) 
             {
                 if (Suggestions.ContainsKey(i))
                 {
@@ -93,13 +94,16 @@ namespace BkTreeSpellChecker
 
                 i++;
             }
-
         }
 
         // resets object to default value
-        public void ResetObject()
+        public void ResetObject(bool resetMargin)
         {
-            ErrorMargin = 0;
+            if (resetMargin)
+            {
+                ErrorMargin = 0;
+            }
+
             Suggestions.Clear();
             Found = false;
             Word = string.Empty;
@@ -107,6 +111,5 @@ namespace BkTreeSpellChecker
         }
 
         #endregion
-
     }
 }

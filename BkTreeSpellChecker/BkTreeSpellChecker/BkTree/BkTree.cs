@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker.BkTree
@@ -11,6 +14,11 @@ namespace BkTreeSpellChecker.BkTree
     {
         public List<int> Positions { get; set; }
         public string[] Suggestions { get; set; }
+
+        public TextCheckResult()
+        {
+            Positions = new List<int>();
+        }
     }
 
     // my implementation of the Burkhard-keller tree (metric tree)
@@ -20,7 +28,9 @@ namespace BkTreeSpellChecker.BkTree
     {
         #region properties & variables
 
+        // Properties used for text checking (.txt)
         private Hashtable _textChecker;
+        private StringBuilder _stringBuilder;
 
         private readonly IBkMetricSpace<string> _stringMetric;
         private SpellCheckResult _spellCheckResult;
@@ -34,7 +44,7 @@ namespace BkTreeSpellChecker.BkTree
         // default constructor 
         public BkTree()
         {
-            _stringMetric = new BkLevenshteinDistance();
+            _stringMetric = new LevenshteinDistance();
             _size = 0;
         }
 
@@ -72,6 +82,7 @@ namespace BkTreeSpellChecker.BkTree
 
             var currentNode = _root;
             var distance = _stringMetric.GetDistance(currentNode.GetElement(), word);
+
             if (distance == 0) // word already exist 
             {
                 return;
@@ -89,15 +100,16 @@ namespace BkTreeSpellChecker.BkTree
                 _spellCheckResult = new SpellCheckResult();
             }
 
-            _spellCheckResult.SetObject(word, error);
+            _spellCheckResult.SetObject(error, word);
 
             word = word.ToLower();
             SearchTree(_root, _spellCheckResult, word, error);
             return _spellCheckResult;
         }
 
+        // TODO -> Take care of punctuation
         // spell checks a whole txt file, error margin must be specified for suggestions 
-        public void TextSpellCheck(string path, int errorMargin)
+        public string TextSpellCheck(string path, int errorMargin)
         {
             if (_textChecker == null)
             {
@@ -111,23 +123,25 @@ namespace BkTreeSpellChecker.BkTree
 
             else
             {
-                _spellCheckResult.ResetObject();
+                _spellCheckResult.ResetObject(true);
             }
 
-            var wordSet = new HashSet<string>(); // change in the distinction
+            var wordSet = new HashSet<string>(); // holds a reference to words found in the text file 
             var lines = File.ReadAllLines(path);
 
             // each word has a position
             // a new line is also considered and its position is recorded to 
             var position = 0;
+            _spellCheckResult.SetObject(errorMargin);
 
             foreach (var line in lines)
             {
                 if (!string.IsNullOrEmpty(line))
                 {
                     var words = line.ToLower().Split(' ');
-                    foreach (var w in words)
+                    for (var i = 0; i < words.Length; i++)
                     {
+                        var w = words[i];
                         if (string.IsNullOrEmpty(w)) // white space found 
                         {
                             continue; // do no thing to not increment position 
@@ -136,11 +150,10 @@ namespace BkTreeSpellChecker.BkTree
                         if (wordSet.Contains(w))
                         {
                             position++;
-
                             if (_textChecker.ContainsKey(w))
                             {
-                                var positions = (TextCheckResult)_textChecker[w];
-                                positions.Positions.Add(position);
+                                var positions = ((TextCheckResult)_textChecker[w]).Positions;
+                                positions.Add(position);
                             }
 
                             continue;
@@ -151,17 +164,22 @@ namespace BkTreeSpellChecker.BkTree
                         SearchTree(_root, _spellCheckResult, w, errorMargin); // checking word 
                         if (!_spellCheckResult.Found)
                         {
-                            _textChecker.Add(w, new TextCheckResult { Positions = new List<int>(position), Suggestions = _spellCheckResult.GetResultCopy() });
+                            var tmpCheckResult = new TextCheckResult { Suggestions = _spellCheckResult.GetResultCopy() };
+                            tmpCheckResult.Positions.Add(position);
+                            _textChecker.Add(w, tmpCheckResult);
                         }
 
-                        _spellCheckResult.ResetObject();
+                        _spellCheckResult.ResetObject(false); // reset spell check result without reseting the margin error
                     }
                 }
+
                 else // a new line is found increment position
                 {
                     position++;
                 }
             }
+
+            return ParseTextChecker();
         }
 
         #endregion
@@ -214,6 +232,48 @@ namespace BkTreeSpellChecker.BkTree
                 var node = root.GetChildren()[dist];
                 SearchTree(node, spellCheck, word, distance);
             }
+        }
+
+        // parses the _textChecker hashtable to a readable string 
+        private string ParseTextChecker()
+        {
+            if (_stringBuilder == null)
+            {
+                _stringBuilder = new StringBuilder(); // init sb
+            }
+
+            _stringBuilder.Clear(); // clear sb
+
+            // no text checker found 
+            if (_textChecker == null)
+            {
+                throw new NullReferenceException("Text checker is set to null");
+            }
+
+            var total = _textChecker.Count;
+
+            // no spelling mistakes 
+            if (total == 0)
+            {
+                _stringBuilder.Append("No spelling mistakes found");
+                return _stringBuilder.ToString();
+            }
+
+            _stringBuilder.Append($"Total incorrect words {total} \n******************************************\n\n");
+
+            foreach (var key in _textChecker.Keys)
+            {
+                var result = (TextCheckResult)_textChecker[key];
+                var positions = result.Positions;
+                var suggestions = result.Suggestions;
+                var suggest = suggestions != null;
+
+                _stringBuilder.Append($"Word is -> {key} with {positions.Count} total occurrences." +
+                                      $"\n\tFound at position/s: {string.Join("; ", positions)}" 
+                                      + (suggest ? $"\n\tList: {string.Join("; ", suggestions.Where(s => s != null))}" : "\n\tNo suggestions")).Append("\n\n");
+            }
+
+            return _stringBuilder.ToString();
         }
 
         #endregion

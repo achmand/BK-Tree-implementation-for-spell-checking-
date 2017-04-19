@@ -48,7 +48,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpellCheckResult.cs" />
-    <Compile Include="StringMetrics\BkLevenshteinDistance.cs" />
+    <Compile Include="StringMetrics\BaseBkMetricSpace.cs" />
+    <Compile Include="StringMetrics\DamerauLevenshteinDistance.cs" />
+    <Compile Include="StringMetrics\LevenshteinDistance.cs" />
     <Compile Include="StringMetrics\IBkMetricSpace.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,40 +1,14 @@
 ﻿using System;
-using BkTreeSpellChecker.BkTree;
 
 namespace BkTreeSpellChecker.StringMetrics
 {
     // a levenshtein distance metric used in the bk tree
-    public sealed class BkLevenshteinDistance : IBkMetricSpace<string>
+    // for more info visit: https://en.wikipedia.org/wiki/Levenshtein_distance
+    // uses single-character edits to calculate distance
+    // code taken from: https://rosettacode.org/wiki/Levenshtein_distance (Modified pieces of the code) 
+    public sealed class LevenshteinDistance : BaseBkMetricSpace
     {
-        // gets the distance between the two bk tree nodes
-        public int GetDistance(BkTreeNode<string> sourceNode, BkTreeNode<string> targetNode)
-        {
-            if (sourceNode == null || targetNode == null)
-            {
-                throw new Exception("Nodes cannot be null.");
-            }
-
-            var source = sourceNode.GetElement();
-            var target = targetNode.GetElement();
-
-            var distance = LevenshteinDistance(source, target);
-            return distance;
-        }
-
-        // gets the distance between the two bk tree nodes
-        public int GetDistance(string source, string target)
-        {
-            if (string.IsNullOrEmpty(source) || string.IsNullOrWhiteSpace(target))
-            {
-                throw new Exception("Strings cannot be null.");
-            }
-
-            var distance = LevenshteinDistance(source, target);
-            return distance;
-        }
-        
-        // implementation of LevenshteinDistance 
-        private static int LevenshteinDistance(string source, string target)
+        public override int ComputeDistance(string source, string target)
         {
             if (string.IsNullOrEmpty(source))
             {
