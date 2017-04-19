@@ -50,13 +50,13 @@
     <Compile Include="SpellCheckResult.cs" />
     <Compile Include="StringMetrics\BkLevenshteinDistance.cs" />
     <Compile Include="StringMetrics\IBkMetricSpace.cs" />
-    <Compile Include="StringMetrics\StringMetrics.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="WordList\savedGraph.gp" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Ebooks\ZoneTherapyEBook.txt" />
     <Content Include="WordList\dictionary.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

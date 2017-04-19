@@ -17,7 +17,7 @@ namespace BkTreeSpellChecker
         private int ErrorMargin { get; set; }
         private string Word { get; set; }
         private readonly string[] _wordsSuggested;
-        
+
         #endregion
 
         #region ctor
@@ -40,48 +40,53 @@ namespace BkTreeSpellChecker
             Array.Clear(_wordsSuggested, 0, _wordsSuggested.Length);
         }
 
-        public string GetResult()
+        public string GetResultText()
         {
-            if (!Found)
-            {
-                var i = 1;
-                var count = 0;
-
-                while (true) // this will always iterate at most as the value of TotalSuggestions
-                {
-                    if (Suggestions.ContainsKey(i))
-                    {
-                        var list = Suggestions[i];
-                        foreach (var t in list)
-                        {
-                            if (count == TotalSuggestions)
-                            {
-                                break;
-                            }
-
-                            _wordsSuggested[count] = t;
-                            count++;
-                        }
-                    }
-
-                    if (i == ErrorMargin)
-                    {
-                        break;
-                    }
-
-                    i++;
-                }
-            }
-
+            GetResultArray();
             var result = $"Error margin {ErrorMargin} & word '{Word}' is " + (Found ? "correct" : $"incorrect - top 10 suggestions: {string.Join(",", _wordsSuggested.Select(p => p))}");
             return result;
         }
 
-        #endregion
+        public string[] GetResultArray()
+        {
+            if (Found)
+            {
+                return null;
+            }
 
-        #region private methods
+            var i = 1;
+            var count = 0;
 
-        private void ResetObject()
+            while (true) // this will always iterate at most as the value of TotalSuggestions
+            {
+                if (Suggestions.ContainsKey(i))
+                {
+                    var list = Suggestions[i];
+                    foreach (var t in list)
+                    {
+                        if (count == TotalSuggestions)
+                        {
+                            break;
+                        }
+
+                        _wordsSuggested[count] = t;
+                        count++;
+                    }
+                }
+
+                if (i == ErrorMargin)
+                {
+                    break;
+                }
+
+                i++;
+            }
+
+            return _wordsSuggested;
+        }
+
+        // resets object to default value
+        public void ResetObject()
         {
             ErrorMargin = 0;
             Suggestions.Clear();
@@ -90,5 +95,6 @@ namespace BkTreeSpellChecker
         }
 
         #endregion
+
     }
 }

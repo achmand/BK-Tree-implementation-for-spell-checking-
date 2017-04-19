@@ -5,7 +5,7 @@ using BkTreeSpellChecker.StringMetrics;
 namespace BkTreeSpellChecker.BkTree
 {
     [Serializable]
-    public class BkTreeNode<T> // node used in the Bk tree
+    public sealed class BkTreeNode<T> // node used in the Bk tree
     {
         #region properties & variables
 
