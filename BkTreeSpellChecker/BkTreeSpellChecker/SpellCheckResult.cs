@@ -37,7 +37,6 @@ namespace BkTreeSpellChecker
             ResetObject();
             Word = word;
             ErrorMargin = error;
-            Array.Clear(_wordsSuggested, 0, _wordsSuggested.Length);
         }
 
         public string GetResultText()
@@ -47,11 +46,24 @@ namespace BkTreeSpellChecker
             return result;
         }
 
-        public string[] GetResultArray()
+        public string[] GetResultCopy()
         {
             if (Found)
             {
                 return null;
+            }
+
+            GetResultArray();
+            var result = new string[TotalSuggestions];
+            Array.Copy(_wordsSuggested,result,TotalSuggestions);
+            return result;
+        }
+
+        private void GetResultArray()
+        {
+            if (Found)
+            {
+                return;
             }
 
             var i = 1;
@@ -82,7 +94,6 @@ namespace BkTreeSpellChecker
                 i++;
             }
 
-            return _wordsSuggested;
         }
 
         // resets object to default value
@@ -92,6 +103,7 @@ namespace BkTreeSpellChecker
             Suggestions.Clear();
             Found = false;
             Word = string.Empty;
+            Array.Clear(_wordsSuggested, 0, _wordsSuggested.Length);
         }
 
         #endregion

@@ -151,7 +151,7 @@ namespace BkTreeSpellChecker.BkTree
                         SearchTree(_root, _spellCheckResult, w, errorMargin); // checking word 
                         if (!_spellCheckResult.Found)
                         {
-                            _textChecker.Add(w, new TextCheckResult { Positions = new List<int>(position), Suggestions = _spellCheckResult.GetResultArray() });
+                            _textChecker.Add(w, new TextCheckResult { Positions = new List<int>(position), Suggestions = _spellCheckResult.GetResultCopy() });
                         }
 
                         _spellCheckResult.ResetObject();
