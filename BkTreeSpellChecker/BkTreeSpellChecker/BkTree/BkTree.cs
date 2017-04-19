@@ -6,6 +6,7 @@ using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker.BkTree
 {
+    // used as a result for the text check (.txt)
     public sealed class TextCheckResult
     {
         public List<int> Positions { get; set; }
@@ -127,6 +128,11 @@ namespace BkTreeSpellChecker.BkTree
                     var words = line.ToLower().Split(' ');
                     foreach (var w in words)
                     {
+                        if (string.IsNullOrEmpty(w)) // white space found 
+                        {
+                            continue; // do no thing to not increment position 
+                        }
+
                         if (wordSet.Contains(w))
                         {
                             position++;
@@ -156,7 +162,6 @@ namespace BkTreeSpellChecker.BkTree
                     position++;
                 }
             }
-
         }
 
         #endregion

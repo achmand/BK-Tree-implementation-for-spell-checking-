@@ -74,7 +74,7 @@ namespace BkTreeSpellChecker
                     }
                 }
 
-                if (i == ErrorMargin)
+                if (i >= ErrorMargin)
                 {
                     break;
                 }
