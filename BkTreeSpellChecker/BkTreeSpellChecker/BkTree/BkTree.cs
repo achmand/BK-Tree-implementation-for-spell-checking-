@@ -270,7 +270,7 @@ namespace BkTreeSpellChecker.BkTree
 
                 _stringBuilder.Append($"Word is -> {key} with {positions.Count} total occurrences." +
                                       $"\n\tFound at position/s: {string.Join("; ", positions)}" 
-                                      + (suggest ? $"\n\tList: {string.Join("; ", suggestions.Where(s => s != null))}" : "\n\tNo suggestions")).Append("\n\n");
+                                      + (suggest ? $"\n\tSuggestions: {string.Join("; ", suggestions.Where(s => s != null))}" : "\n\tNo suggestions")).Append("\n\n");
             }
 
             return _stringBuilder.ToString();
