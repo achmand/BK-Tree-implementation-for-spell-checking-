@@ -37,6 +37,8 @@ namespace BkTreeSpellChecker.BkTree
         private BkTreeNode<string> _root;
         private int _size;
 
+        private readonly char[] _specialCharacters = { ',', '?', '"', '!', '.' , ')' , '('};
+
         #endregion
 
         #region ctors
@@ -107,7 +109,6 @@ namespace BkTreeSpellChecker.BkTree
             return _spellCheckResult;
         }
 
-        // TODO -> Take care of punctuation
         // spell checks a whole txt file, error margin must be specified for suggestions 
         public string TextSpellCheck(string path, int errorMargin)
         {
@@ -134,8 +135,9 @@ namespace BkTreeSpellChecker.BkTree
             var position = 0;
             _spellCheckResult.SetObject(errorMargin);
 
-            foreach (var line in lines)
+            for (int x = 0; x < lines.Length; x++)
             {
+                var line = lines[x];
                 if (!string.IsNullOrEmpty(line))
                 {
                     var words = line.ToLower().Split(' ');
@@ -147,6 +149,7 @@ namespace BkTreeSpellChecker.BkTree
                             continue; // do no thing to not increment position 
                         }
 
+                        w = w.Trim(_specialCharacters);
                         if (wordSet.Contains(w))
                         {
                             position++;
@@ -269,7 +272,7 @@ namespace BkTreeSpellChecker.BkTree
                 var suggest = suggestions != null;
 
                 _stringBuilder.Append($"Word is -> {key} with {positions.Count} total occurrences." +
-                                      $"\n\tFound at position/s: {string.Join("; ", positions)}" 
+                                      $"\n\tFound at position/s: {string.Join("; ", positions)}"
                                       + (suggest ? $"\n\tSuggestions: {string.Join("; ", suggestions.Where(s => s != null))}" : "\n\tNo suggestions")).Append("\n\n");
             }
 

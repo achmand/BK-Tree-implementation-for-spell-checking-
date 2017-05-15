@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker
@@ -31,7 +30,7 @@ namespace BkTreeSpellChecker
             var path = AppDomain.CurrentDomain.BaseDirectory;
             path = path.Substring(0, path.IndexOf("bin", StringComparison.Ordinal)) + "Ebooks/ZoneTherapyEBook.txt";
             var result = bkTree.TextSpellCheck(path, 1);
-            //Console.BufferHeight = 20000;
+            Console.BufferHeight = 20000;
             Console.WriteLine(result);
 
             Console.ReadKey();
