@@ -127,7 +127,7 @@ namespace BkTreeSpellChecker.BkTree
                 _spellCheckResult.ResetObject(true);
             }
 
-            var wordSet = new HashSet<string>(); // holds a reference to words found in the text file 
+            var wordSet = new HashSet<string>(); // holds a reference to words found in the text file (little hack here)
             var lines = File.ReadAllLines(path);
 
             // each word has a position
@@ -183,7 +183,13 @@ namespace BkTreeSpellChecker.BkTree
             }
 
             return ParseTextChecker();
-        }
+        } // Without the use of a global hashset/hashtable
+
+        // heuristic added 
+        public string TextSpellCheckHeuristic(string path, int errorMargin)
+        {
+            return string.Empty;
+        } 
 
         #endregion
 
