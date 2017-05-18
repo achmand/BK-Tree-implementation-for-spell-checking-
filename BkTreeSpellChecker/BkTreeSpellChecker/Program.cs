@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Text;
 using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker
@@ -7,35 +9,66 @@ namespace BkTreeSpellChecker
     {
         static void Main(string[] args)
         {
-            // using levenshtein distance as a string metric  
+            #region section 6 
+
+            /*
             var bkTree = new BkTree.BkTree(new LevenshteinDistance());
+            BkTree.BkTree.BuildTree(bkTree);
+            var result = bkTree.SpellCheck("bookes", 2);
+            Console.WriteLine(result.GetResultText());
+            */
 
-            // load tree (GC is much higher when loading from file)
-            /*var treepath = AppDomain.CurrentDomain.BaseDirectory;
-            treepath = treepath.Substring(0, treepath.IndexOf("bin", StringComparison.Ordinal)) + "WordList/savedGraph.gp";
-            BkTree.BkTree.LoadTree(bkTree, treepath);*/
+            #endregion
 
-            // BUILDING THE TREE
-            var buildPath = AppDomain.CurrentDomain.BaseDirectory;
-            buildPath = buildPath.Substring(0, buildPath.IndexOf("bin", StringComparison.Ordinal)) +
-                        "WordList/dictionary.txt";
-            BkTree.BkTree.BuildTree(bkTree, buildPath);
-            //BkTree.BkTree.SaveTree(bkTree, "savedGraph.gp"); 
+            #region section 7 
 
-            /* Section 6 – P3.2 */
-            //var result = bkTree.SpellCheck("bookes", 2);
-            //Console.WriteLine(result.GetResultText());
+            /*
+            
+            var bkTree = new BkTree.BkTree(new LevenshteinDistance());
+            BkTree.BkTree.BuildTree(bkTree);
 
-
-            /* Section 7 – P4.1 */
             var path = AppDomain.CurrentDomain.BaseDirectory;
             path = path.Substring(0, path.IndexOf("bin", StringComparison.Ordinal)) + "Ebooks/ZoneTherapyEBook.txt";
             var result = bkTree.TextSpellCheck(path, 1);
             Console.BufferHeight = 20000;
             Console.WriteLine(result);
+            
+            */
+
+            #endregion
+
+            #region section 9 
+
+            var bkTreeA = new BkTree.BkTree(new LevenshteinDistance());
+            BkTree.BkTree.BuildTree(bkTreeA);
+
+            var bkTreeB = new BkTree.BkTree(new LevenshteinDistance(), true); // heuristic
+            BkTree.BkTree.BuildTree(bkTreeB);
+
+            var path = AppDomain.CurrentDomain.BaseDirectory;
+            path = path.Substring(0, path.IndexOf("bin", StringComparison.Ordinal)) + "Ebooks/ZoneTherapyEBook.txt";
+
+            var stopWatch = new Stopwatch();
+
+            stopWatch.Start();
+            bkTreeA.TextSpellCheck(path, 1);
+            stopWatch.Stop();
+            Console.WriteLine(stopWatch.Elapsed.TotalSeconds + " s");
+            stopWatch.Reset();
+
+            stopWatch.Start();
+            bkTreeB.TextSpellCheckHeuristic(path, 1);
+            stopWatch.Stop();
+            Console.WriteLine(stopWatch.Elapsed.TotalSeconds + " s");
+            stopWatch.Reset();
+            
+            //Console.BufferHeight = 20000;
+            //Console.WriteLine(resultA);
+            //Console.WriteLine(resultB);
+
+            #endregion
 
             Console.ReadKey();
         }
-
     }
 }

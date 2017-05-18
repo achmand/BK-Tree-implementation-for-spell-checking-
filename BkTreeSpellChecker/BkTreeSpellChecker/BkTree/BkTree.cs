@@ -146,7 +146,7 @@ namespace BkTreeSpellChecker.BkTree
 
             // holds a reference to words found in the text file (little hack here)
             var wordSet = new HashSet<string>();
-            var lines = File.ReadAllLines(path);
+            var lines = File.ReadAllLines(path); // used lines instead of text to cater for large text files 
 
             // each word has a position
             // a new line is also considered and its position is recorded to 
@@ -156,8 +156,6 @@ namespace BkTreeSpellChecker.BkTree
             for (int x = 0; x < lines.Length; x++)
             {
                 var line = lines[x];
-                position++;
-
                 if (!string.IsNullOrEmpty(line))
                 {
                     var words = line.ToLower().Split(' ');
@@ -170,6 +168,8 @@ namespace BkTreeSpellChecker.BkTree
                         }
 
                         w = w.Trim(_specialCharacters);
+                        position++;
+
                         if (wordSet.Contains(w))
                         {
                             if (_textChecker.ContainsKey(w))
@@ -177,6 +177,7 @@ namespace BkTreeSpellChecker.BkTree
                                 var positions = ((TextCheckResult)_textChecker[w]).Positions;
                                 positions.Add(position);
                             }
+
                             continue;
                         }
 
@@ -189,8 +190,13 @@ namespace BkTreeSpellChecker.BkTree
                             _textChecker.Add(w, tmpCheckResult);
                         }
 
+                        // reset spell check result without reseting the margin error
                         _spellCheckResult.ResetObject(false);
                     }
+                }
+                else
+                {
+                    position++;
                 }
             }
 
@@ -220,14 +226,12 @@ namespace BkTreeSpellChecker.BkTree
             }
 
             var position = 0;
-            var lines = File.ReadAllLines(path);
+            var lines = File.ReadAllLines(path); 
             _spellCheckResult.SetObject(errorMargin);
 
             for (int x = 0; x < lines.Length; x++)
             {
                 var line = lines[x];
-                position++;
-
                 if (!string.IsNullOrEmpty(line))
                 {
                     var words = line.ToLower().Split(' ');
@@ -239,8 +243,8 @@ namespace BkTreeSpellChecker.BkTree
                             continue;
                         }
 
-                        position++;
                         w = w.Trim(_specialCharacters);
+                        position++;
 
                         if (GlobalWordSet.Contains(w))
                         {
@@ -264,6 +268,10 @@ namespace BkTreeSpellChecker.BkTree
 
                         _spellCheckResult.ResetObject(false);
                     }
+                }
+                else
+                {
+                    position++;
                 }
             }
 
@@ -390,8 +398,15 @@ namespace BkTreeSpellChecker.BkTree
         }
 
         // used to build tree
-        public static void BuildTree(BkTree bkTree, string path)
+        public static void BuildTree(BkTree bkTree, string path = "")
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                var buildPath = AppDomain.CurrentDomain.BaseDirectory;
+                path = buildPath.Substring(0, buildPath.IndexOf("bin", StringComparison.Ordinal)) +
+                            "WordList/dictionary.txt";
+            }
+
             var words = File.ReadAllLines(path);
             if (words.Length <= 0)
             {
