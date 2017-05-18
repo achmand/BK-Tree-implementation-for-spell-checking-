@@ -39,7 +39,7 @@ namespace BkTreeSpellChecker.BkTree
 
         private readonly char[] _specialCharacters = { ',', '?', '"', '!', '.', ')', '(' };
 
-        private HashSet<string> _globalWordSet { get; }
+        private HashSet<string> GlobalWordSet { get; }
 
         #endregion
 
@@ -53,7 +53,7 @@ namespace BkTreeSpellChecker.BkTree
 
             if (useWordSet)
             {
-                _globalWordSet = new HashSet<string>();
+                GlobalWordSet = new HashSet<string>();
             }
         }
 
@@ -65,7 +65,7 @@ namespace BkTreeSpellChecker.BkTree
 
             if (useWordSet)
             {
-                _globalWordSet = new HashSet<string>();
+                GlobalWordSet = new HashSet<string>();
             }
         }
 
@@ -88,7 +88,6 @@ namespace BkTreeSpellChecker.BkTree
             }
 
             word = word.ToLower();
-            _globalWordSet?.Add(word);
 
             // set the new root node
             if (_root == null)
@@ -107,6 +106,7 @@ namespace BkTreeSpellChecker.BkTree
                 return;
             }
 
+            GlobalWordSet?.Add(word);
             _size += currentNode.AddNode(distance, new BkTreeNode<string>(word), _stringMetric);
         }
 
@@ -132,7 +132,7 @@ namespace BkTreeSpellChecker.BkTree
         {
             if (_textChecker == null)
             {
-                _textChecker = new Hashtable();
+                _textChecker = new Hashtable(); // TODO -> if already exists clear to be reused
             }
 
             if (_spellCheckResult == null)
@@ -156,83 +156,8 @@ namespace BkTreeSpellChecker.BkTree
             for (int x = 0; x < lines.Length; x++)
             {
                 var line = lines[x];
-                if (!string.IsNullOrEmpty(line))
-                {
-                    var words = line.ToLower().Split(' ');
-                    for (var i = 0; i < words.Length; i++)
-                    {
-                        var w = words[i];
-                        if (string.IsNullOrEmpty(w)) // white space found 
-                        {
-                            continue; // do no thing to not increment position 
-                        }
+                position++;
 
-                        w = w.Trim(_specialCharacters);
-                        if (wordSet.Contains(w))
-                        {
-                            position++;
-                            if (_textChecker.ContainsKey(w))
-                            {
-                                var positions = ((TextCheckResult)_textChecker[w]).Positions;
-                                positions.Add(position);
-                            }
-
-                            continue;
-                        }
-
-                        wordSet.Add(w);
-                        position++;
-                        SearchTree(_root, _spellCheckResult, w, errorMargin); // checking word 
-                        if (!_spellCheckResult.Found)
-                        {
-                            var tmpCheckResult = new TextCheckResult { Suggestions = _spellCheckResult.GetResultCopy() };
-                            tmpCheckResult.Positions.Add(position);
-                            _textChecker.Add(w, tmpCheckResult);
-                        }
-
-                        _spellCheckResult.ResetObject(false); // reset spell check result without reseting the margin error
-                    }
-                }
-
-                // a new line is found increment position
-                else
-                {
-                    position++;
-                }
-            }
-
-            return ParseTextChecker();
-        }
-
-        // heuristic added 
-        public string TextSpellCheckHeuristic(string path, int errorMargin)
-        {
-            if (_globalWordSet == null)
-            {
-                return TextSpellCheck(path, errorMargin);
-            }
-
-            if (_textChecker == null)
-            {
-                _textChecker = new Hashtable();
-            }
-
-            if (_spellCheckResult == null)
-            {
-                _spellCheckResult = new SpellCheckResult();
-            }
-            else
-            {
-                _spellCheckResult.ResetObject(true);
-            }
-
-            var lines = File.ReadAllLines(path);
-            var position = 0;
-            _spellCheckResult.SetObject(errorMargin);
-
-            for (int x = 0; x < lines.Length; x++)
-            {
-                var line = lines[x];
                 if (!string.IsNullOrEmpty(line))
                 {
                     var words = line.ToLower().Split(' ');
@@ -245,14 +170,103 @@ namespace BkTreeSpellChecker.BkTree
                         }
 
                         w = w.Trim(_specialCharacters);
-                       _spellCheckResult.ResetObject(false);
+                        if (wordSet.Contains(w))
+                        {
+                            if (_textChecker.ContainsKey(w))
+                            {
+                                var positions = ((TextCheckResult)_textChecker[w]).Positions;
+                                positions.Add(position);
+                            }
+                            continue;
+                        }
+
+                        wordSet.Add(w);
+                        SearchTree(_root, _spellCheckResult, w, errorMargin);
+                        if (!_spellCheckResult.Found)
+                        {
+                            var tmpCheckResult = new TextCheckResult { Suggestions = _spellCheckResult.GetResultCopy() };
+                            tmpCheckResult.Positions.Add(position);
+                            _textChecker.Add(w, tmpCheckResult);
+                        }
+
+                        _spellCheckResult.ResetObject(false);
                     }
                 }
-                else // return add position
+            }
+
+            return ParseTextChecker();
+        }
+
+        // heuristic added 
+        public string TextSpellCheckHeuristic(string path, int errorMargin)
+        {
+            if (GlobalWordSet == null)
+            {
+                return TextSpellCheck(path, errorMargin);
+            }
+
+            if (_textChecker == null)
+            {
+                _textChecker = new Hashtable(); // TODO -> if already exists clear to be reused
+            }
+
+            if (_spellCheckResult == null)
+            {
+                _spellCheckResult = new SpellCheckResult();
+            }
+            else
+            {
+                _spellCheckResult.ResetObject(true);
+            }
+
+            var position = 0;
+            var lines = File.ReadAllLines(path);
+            _spellCheckResult.SetObject(errorMargin);
+
+            for (int x = 0; x < lines.Length; x++)
+            {
+                var line = lines[x];
+                position++;
+
+                if (!string.IsNullOrEmpty(line))
                 {
-                    position++; 
+                    var words = line.ToLower().Split(' ');
+                    for (var i = 0; i < words.Length; i++)
+                    {
+                        var w = words[i];
+                        if (string.IsNullOrEmpty(w))
+                        {
+                            continue;
+                        }
+
+                        position++;
+                        w = w.Trim(_specialCharacters);
+
+                        if (GlobalWordSet.Contains(w))
+                        {
+                            continue;
+                        }
+
+                        if (_textChecker.ContainsKey(w))
+                        {
+                            var positions = ((TextCheckResult)_textChecker[w]).Positions;
+                            positions.Add(position);
+                            continue;
+                        }
+
+                        SearchTree(_root, _spellCheckResult, w, errorMargin);
+                        if (!_spellCheckResult.Found)
+                        {
+                            var tmpCheckResult = new TextCheckResult { Suggestions = _spellCheckResult.GetResultCopy() };
+                            tmpCheckResult.Positions.Add(position);
+                            _textChecker.Add(w, tmpCheckResult);
+                        }
+
+                        _spellCheckResult.ResetObject(false);
+                    }
                 }
             }
+
             return ParseTextChecker();
         }
 
