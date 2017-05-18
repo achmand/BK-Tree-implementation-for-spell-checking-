@@ -37,30 +37,43 @@ namespace BkTreeSpellChecker.BkTree
         private BkTreeNode<string> _root;
         private int _size;
 
-        private readonly char[] _specialCharacters = { ',', '?', '"', '!', '.' , ')' , '('};
+        private readonly char[] _specialCharacters = { ',', '?', '"', '!', '.', ')', '(' };
+
+        private HashSet<string> _globalWordSet { get; }
 
         #endregion
 
         #region ctors
 
         // default constructor 
-        public BkTree()
+        public BkTree(bool useWordSet = false)
         {
             _stringMetric = new LevenshteinDistance();
             _size = 0;
+
+            if (useWordSet)
+            {
+                _globalWordSet = new HashSet<string>();
+            }
         }
 
         // inject metric space method 
-        public BkTree(IBkMetricSpace<string> bkMetricSpace)
+        public BkTree(IBkMetricSpace<string> bkMetricSpace, bool useWordSet = false)
         {
             _stringMetric = bkMetricSpace;
             _size = 0;
+
+            if (useWordSet)
+            {
+                _globalWordSet = new HashSet<string>();
+            }
         }
 
         #endregion
 
         #region public methods
 
+        // returns the size 
         public int GetSize()
         {
             return _size;
@@ -75,9 +88,12 @@ namespace BkTreeSpellChecker.BkTree
             }
 
             word = word.ToLower();
+            _globalWordSet?.Add(word);
+
+            // set the new root node
             if (_root == null)
             {
-                _root = new BkTreeNode<string>(word); // set the new root node
+                _root = new BkTreeNode<string>(word);
                 _size++;
                 return;
             }
@@ -85,7 +101,8 @@ namespace BkTreeSpellChecker.BkTree
             var currentNode = _root;
             var distance = _stringMetric.GetDistance(currentNode.GetElement(), word);
 
-            if (distance == 0) // word already exist 
+            // word already exist
+            if (distance == 0)
             {
                 return;
             }
@@ -110,6 +127,7 @@ namespace BkTreeSpellChecker.BkTree
         }
 
         // spell checks a whole txt file, error margin must be specified for suggestions 
+        // Without the use of a global hashset/hashtable
         public string TextSpellCheck(string path, int errorMargin)
         {
             if (_textChecker == null)
@@ -121,13 +139,13 @@ namespace BkTreeSpellChecker.BkTree
             {
                 _spellCheckResult = new SpellCheckResult();
             }
-
             else
             {
                 _spellCheckResult.ResetObject(true);
             }
 
-            var wordSet = new HashSet<string>(); // holds a reference to words found in the text file (little hack here)
+            // holds a reference to words found in the text file (little hack here)
+            var wordSet = new HashSet<string>();
             var lines = File.ReadAllLines(path);
 
             // each word has a position
@@ -176,20 +194,67 @@ namespace BkTreeSpellChecker.BkTree
                     }
                 }
 
-                else // a new line is found increment position
+                // a new line is found increment position
+                else
                 {
                     position++;
                 }
             }
 
             return ParseTextChecker();
-        } // Without the use of a global hashset/hashtable
+        }
 
         // heuristic added 
         public string TextSpellCheckHeuristic(string path, int errorMargin)
         {
-            return string.Empty;
-        } 
+            if (_globalWordSet == null)
+            {
+                return TextSpellCheck(path, errorMargin);
+            }
+
+            if (_textChecker == null)
+            {
+                _textChecker = new Hashtable();
+            }
+
+            if (_spellCheckResult == null)
+            {
+                _spellCheckResult = new SpellCheckResult();
+            }
+            else
+            {
+                _spellCheckResult.ResetObject(true);
+            }
+
+            var lines = File.ReadAllLines(path);
+            var position = 0;
+            _spellCheckResult.SetObject(errorMargin);
+
+            for (int x = 0; x < lines.Length; x++)
+            {
+                var line = lines[x];
+                if (!string.IsNullOrEmpty(line))
+                {
+                    var words = line.ToLower().Split(' ');
+                    for (var i = 0; i < words.Length; i++)
+                    {
+                        var w = words[i];
+                        if (string.IsNullOrEmpty(w))
+                        {
+                            continue;
+                        }
+
+                        w = w.Trim(_specialCharacters);
+                       _spellCheckResult.ResetObject(false);
+                    }
+                }
+                else // return add position
+                {
+                    position++; 
+                }
+            }
+            return ParseTextChecker();
+        }
 
         #endregion
 
