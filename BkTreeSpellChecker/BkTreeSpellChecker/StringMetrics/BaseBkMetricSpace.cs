@@ -7,7 +7,7 @@ namespace BkTreeSpellChecker.StringMetrics
     public abstract class BaseBkMetricSpace : IBkMetricSpace<string>
     {
         // gets the distance between the two bk tree nodes
-        public int GetDistance(BkTreeNode<string> sourceNode, BkTreeNode<string> targetNode)
+        public double GetDistance(BkTreeNode<string> sourceNode, BkTreeNode<string> targetNode)
         {
             if (sourceNode == null || targetNode == null)
             {
@@ -22,7 +22,7 @@ namespace BkTreeSpellChecker.StringMetrics
         }
 
         // gets the distance between the two bk tree nodes
-        public int GetDistance(string source, string target)
+        public double GetDistance(string source, string target)
         {
             if (string.IsNullOrEmpty(source) || string.IsNullOrWhiteSpace(target))
             {
@@ -34,6 +34,6 @@ namespace BkTreeSpellChecker.StringMetrics
         }
 
         // implementation
-        public abstract int ComputeDistance(string source, string target);
+        public abstract double ComputeDistance(string target, string source);
     }
 }

@@ -10,7 +10,7 @@ namespace BkTreeSpellChecker.BkTree
         #region properties & variables
 
         private readonly T _element;
-        private Dictionary<int, BkTreeNode<T>> Children { get; set; }
+        private Dictionary<double, BkTreeNode<T>> Children { get; set; }
 
         #endregion
 
@@ -37,18 +37,18 @@ namespace BkTreeSpellChecker.BkTree
             return _element;
         }
 
-        public Dictionary<int, BkTreeNode<T>> GetChildren()
+        public Dictionary<double, BkTreeNode<T>> GetChildren()
         {
             return Children;
         }
 
         // adds a new child node 
         // returns 0 if node is not added, 1 if added 
-        public int AddNode(int distance, BkTreeNode<T> node, IBkMetricSpace<T> bkMetricSpace)
+        public int AddNode(double distance, BkTreeNode<T> node, IBkMetricSpace<T> bkMetricSpace)
         {
             if (Children == null)
             {
-                Children = new Dictionary<int, BkTreeNode<T>>(); // init dictionary 
+                Children = new Dictionary<double, BkTreeNode<T>>(); // init dictionary 
             }
 
             // a child with the same distance is already in place
@@ -57,9 +57,9 @@ namespace BkTreeSpellChecker.BkTree
                 var tmpNode = Children[distance];
                 distance = bkMetricSpace.GetDistance(tmpNode.GetElement(), node.GetElement());
 
-                if (distance == 0) // same word
+                if (distance == 0) 
                 {
-                    return 0; // not added
+                    return 0; 
                 }
 
                 tmpNode.AddNode(distance, node, bkMetricSpace);

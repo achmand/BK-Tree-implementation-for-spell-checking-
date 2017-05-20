@@ -52,6 +52,7 @@
     <Compile Include="StringMetrics\DamerauLevenshteinDistance.cs" />
     <Compile Include="StringMetrics\LevenshteinDistance.cs" />
     <Compile Include="StringMetrics\IBkMetricSpace.cs" />
+    <Compile Include="StringMetrics\TypoDistance.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

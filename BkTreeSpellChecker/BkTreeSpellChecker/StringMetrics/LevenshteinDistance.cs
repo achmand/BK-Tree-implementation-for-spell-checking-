@@ -8,7 +8,7 @@ namespace BkTreeSpellChecker.StringMetrics
     // code taken from: https://rosettacode.org/wiki/Levenshtein_distance (Modified pieces of the code) 
     public sealed class LevenshteinDistance : BaseBkMetricSpace
     {
-        public override int ComputeDistance(string source, string target)
+        public override double ComputeDistance(string target, string source)
         {
             if (string.IsNullOrEmpty(source))
             {
@@ -20,7 +20,7 @@ namespace BkTreeSpellChecker.StringMetrics
                 return source.Length;
             }
 
-            if (source == target) // same word
+            if (source == target) 
             {
                 return 0;
             }

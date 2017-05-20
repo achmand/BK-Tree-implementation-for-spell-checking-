@@ -6,7 +6,7 @@ namespace BkTreeSpellChecker.StringMetrics
     // used to get the distance between two bk tree nodes 
     public interface IBkMetricSpace<T>
     {
-        int GetDistance(BkTreeNode<T> source, BkTreeNode<T> target);
-        int GetDistance(T source, T target);
+        double GetDistance(BkTreeNode<T> source, BkTreeNode<T> target);
+        double GetDistance(T source, T target);
     }
 }

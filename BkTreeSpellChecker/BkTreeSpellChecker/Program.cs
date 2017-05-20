@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Text;
 using BkTreeSpellChecker.StringMetrics;
 
 namespace BkTreeSpellChecker
@@ -21,9 +19,7 @@ namespace BkTreeSpellChecker
             #endregion
 
             #region section 7 
-
             /*
-            
             var bkTree = new BkTree.BkTree(new LevenshteinDistance());
             BkTree.BkTree.BuildTree(bkTree);
 
@@ -32,13 +28,11 @@ namespace BkTreeSpellChecker
             var result = bkTree.TextSpellCheck(path, 1);
             Console.BufferHeight = 20000;
             Console.WriteLine(result);
-            
             */
-
             #endregion
 
             #region section 9 
-
+            /*
             var bkTreeA = new BkTree.BkTree(new LevenshteinDistance());
             BkTree.BkTree.BuildTree(bkTreeA);
 
@@ -65,9 +59,12 @@ namespace BkTreeSpellChecker
             //Console.BufferHeight = 20000;
             //Console.WriteLine(resultA);
             //Console.WriteLine(resultB);
-
+            */
             #endregion
-
+            
+            var keyDistance = new KeyDistance(TouchLayoutType.Standard);
+            var distance = keyDistance.GetTypoDistance('m', 'j');
+            Console.WriteLine(distance);
             Console.ReadKey();
         }
     }

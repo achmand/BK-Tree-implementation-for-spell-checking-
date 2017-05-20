@@ -8,11 +8,26 @@ namespace BkTreeSpellChecker.StringMetrics
     // similiar to levenshtein but includes transpositions 
     // NOTE: that for the optimal string alignment distance, the triangle inequality does not hold 
     // (this implementation does not use optimal string alignment)
-    // code taken from: https://github.com/wolfgarbe/symspell/blob/master/symspell.cs (Modified pieces of the code) 
+    // code taken from: https://github.com/wolfgarbe/symspell (Modified pieces of the code) 
     public sealed class DamerauLevenshteinDistance : BaseBkMetricSpace
     {
-        public override int ComputeDistance(string source, string target)
+        public override double ComputeDistance(string target, string source)
         {
+            if (string.IsNullOrEmpty(source))
+            {
+                return string.IsNullOrEmpty(target) ? 0 : target.Length;
+            }
+
+            if (string.IsNullOrEmpty(target))
+            {
+                return source.Length;
+            }
+
+            if (source == target)
+            {
+                return 0;
+            }
+
             var m = source.Length;
             var n = target.Length;
             var h = new int[m + 2, n + 2];
@@ -27,7 +42,8 @@ namespace BkTreeSpellChecker.StringMetrics
 
             for (var j = 0; j <= n; j++)
             {
-                h[1, j + 1] = j; h[0, j + 1] = inf;
+                h[1, j + 1] = j;
+                h[0, j + 1] = inf;
             }
 
             var sd = new SortedDictionary<char, int>();

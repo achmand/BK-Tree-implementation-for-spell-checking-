@@ -10,7 +10,7 @@ namespace BkTreeSpellChecker
         #region properties & variables
 
         public bool Found { get; set; }
-        public Dictionary<int, List<string>> Suggestions { get; set; } // TODO -> Find a nice way to do this suggestion thingy  (too bulky with a list for each distance)
+        public Dictionary<double, List<string>> Suggestions { get; set; } // TODO -> Find a nice way to do this suggestion thingy  (too bulky with a list for each distance)
 
         private const int TotalSuggestions = 10;
 
@@ -24,7 +24,7 @@ namespace BkTreeSpellChecker
 
         public SpellCheckResult()
         {
-            Suggestions = new Dictionary<int, List<string>>();
+            Suggestions = new Dictionary<double, List<string>>();
             _wordsSuggested = new string[10];
         }
 
@@ -55,7 +55,7 @@ namespace BkTreeSpellChecker
 
             GetResultArray();
             var result = new string[TotalSuggestions];
-            Array.Copy(_wordsSuggested,result,TotalSuggestions);
+            Array.Copy(_wordsSuggested, result, TotalSuggestions);
             return result;
         }
 
@@ -70,7 +70,7 @@ namespace BkTreeSpellChecker
             var count = 0;
 
             // this will always iterate at most as the value of TotalSuggestions
-            while (true) 
+            while (true)
             {
                 if (Suggestions.ContainsKey(i))
                 {
