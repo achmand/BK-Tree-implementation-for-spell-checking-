@@ -34,7 +34,7 @@ namespace BkTreeSpellChecker
             #region section 8
 
             // using typo metric for touch interfaces 
-
+            /*
             var bkTreeTypo = new BkTree.BkTree(new TypoDistance()); 
             BkTree.BkTree.BuildTree(bkTreeTypo);
             var result = bkTreeTypo.SpellCheck("Eome", 1);
@@ -44,6 +44,12 @@ namespace BkTreeSpellChecker
             BkTree.BkTree.BuildTree(bkTree);
             var result2 = bkTree.SpellCheck("Eome", 1);
             Console.WriteLine($"Levenshtein Distance: {result2.GetResultText()}");
+
+            result = bkTreeTypo.SpellCheck("ehllo", 1);
+            Console.WriteLine($"Typo Distance: {result.GetResultText()}");
+            result2 = bkTree.SpellCheck("ehllo", 1);
+            Console.WriteLine($"Levenshtein Distance: {result2.GetResultText()}");
+            */
 
             #endregion
 
