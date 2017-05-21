@@ -14,6 +14,8 @@ namespace BkTreeSpellChecker
 
         private const int TotalSuggestions = 10;
 
+        private readonly double _changeRate;
+
         private int ErrorMargin { get; set; }
         private string Word { get; set; }
         private readonly string[] _wordsSuggested;
@@ -22,10 +24,11 @@ namespace BkTreeSpellChecker
 
         #region ctor
 
-        public SpellCheckResult()
+        public SpellCheckResult(double changeRate)
         {
             Suggestions = new Dictionary<double, List<string>>();
             _wordsSuggested = new string[10];
+            _changeRate = changeRate;
         }
 
         #endregion
@@ -66,7 +69,7 @@ namespace BkTreeSpellChecker
                 return;
             }
 
-            var i = 1;
+            var i = _changeRate;
             var count = 0;
 
             // this will always iterate at most as the value of TotalSuggestions
@@ -92,7 +95,7 @@ namespace BkTreeSpellChecker
                     break;
                 }
 
-                i++;
+                i += _changeRate;
             }
         }
 

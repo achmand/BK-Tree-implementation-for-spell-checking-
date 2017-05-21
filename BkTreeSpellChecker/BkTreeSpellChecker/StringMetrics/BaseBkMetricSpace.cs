@@ -6,6 +6,14 @@ namespace BkTreeSpellChecker.StringMetrics
     // base class for bk metric spaces
     public abstract class BaseBkMetricSpace : IBkMetricSpace<string>
     {
+        #region properties and variables 
+
+        public double RateOfChange { get; protected set; }
+
+        #endregion
+
+        #region public methods 
+
         // gets the distance between the two bk tree nodes
         public double GetDistance(BkTreeNode<string> sourceNode, BkTreeNode<string> targetNode)
         {
@@ -35,5 +43,7 @@ namespace BkTreeSpellChecker.StringMetrics
 
         // implementation
         public abstract double ComputeDistance(string target, string source);
+
+        #endregion
     }
 }

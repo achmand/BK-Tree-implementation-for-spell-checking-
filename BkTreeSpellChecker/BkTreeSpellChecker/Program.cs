@@ -31,7 +31,24 @@ namespace BkTreeSpellChecker
             */
             #endregion
 
+            #region section 8
+
+            // using typo metric for touch interfaces 
+
+            var bkTreeTypo = new BkTree.BkTree(new TypoDistance()); 
+            BkTree.BkTree.BuildTree(bkTreeTypo);
+            var result = bkTreeTypo.SpellCheck("Eome", 1);
+            Console.WriteLine($"Typo Distance: {result.GetResultText()}");
+
+            var bkTree = new BkTree.BkTree(new LevenshteinDistance());
+            BkTree.BkTree.BuildTree(bkTree);
+            var result2 = bkTree.SpellCheck("Eome", 1);
+            Console.WriteLine($"Levenshtein Distance: {result2.GetResultText()}");
+
+            #endregion
+
             #region section 9 
+
             /*
             var bkTreeA = new BkTree.BkTree(new LevenshteinDistance());
             BkTree.BkTree.BuildTree(bkTreeA);
@@ -60,11 +77,9 @@ namespace BkTreeSpellChecker
             //Console.WriteLine(resultA);
             //Console.WriteLine(resultB);
             */
+
             #endregion
-            
-            var keyDistance = new KeyDistance(TouchLayoutType.Standard);
-            var distance = keyDistance.GetTypoDistance('m', 'j');
-            Console.WriteLine(distance);
+
             Console.ReadKey();
         }
     }

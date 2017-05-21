@@ -11,6 +11,17 @@ namespace BkTreeSpellChecker.StringMetrics
     // code taken from: https://github.com/wolfgarbe/symspell (Modified pieces of the code) 
     public sealed class DamerauLevenshteinDistance : BaseBkMetricSpace
     {
+        #region constructors 
+
+        public DamerauLevenshteinDistance()
+        {
+            RateOfChange = 1D;
+        }
+
+        #endregion
+
+        #region public methods 
+
         public override double ComputeDistance(string target, string source)
         {
             if (string.IsNullOrEmpty(source))
@@ -81,5 +92,7 @@ namespace BkTreeSpellChecker.StringMetrics
 
             return h[m + 1, n + 1];
         }
+
+        #endregion
     }
 }

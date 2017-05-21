@@ -32,10 +32,11 @@ namespace BkTreeSpellChecker.StringMetrics
         private readonly TouchLayoutType _touchLayoutType;
         private readonly Dictionary<char, Dictionary<char, double>> _adjacentKeys;
 
-        private readonly char[][] _qwertyLayout = {
+        private readonly char[][] _qwertyLayout =
+        {
             new[] {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'},
             new[] {'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'},
-            new[] { 'z', 'x', 'c', 'v', 'b', 'n', 'm' , ',', '.'}
+            new[] {'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.'}
         };
 
         #endregion
@@ -61,7 +62,7 @@ namespace BkTreeSpellChecker.StringMetrics
                 for (var x = 0; x < _qwertyLayout.Length; x++)
                 {
                     var layer = _qwertyLayout[x];
-                    for (var y = 0; y < layer.Length - 1; y++)
+                    for (var y = 0; y < layer.Length; y++)
                     {
                         var key = layer[y];
                         BuildStandard(layer, key, x, y);
@@ -122,6 +123,7 @@ namespace BkTreeSpellChecker.StringMetrics
             }
         }
 
+
         private char GetAdjacent(AdjacentSide adjacentSide, int x, int y)
         {
             switch (adjacentSide)
@@ -158,10 +160,20 @@ namespace BkTreeSpellChecker.StringMetrics
                 return 0;
             }
 
+            if (!_adjacentKeys.ContainsKey(source))
+            {
+                return 1;
+            }
+
             var sourceAdj = _adjacentKeys[source];
             if (sourceAdj.ContainsKey(target))
             {
                 return sourceAdj[target];
+            }
+
+            if (!_adjacentKeys.ContainsKey(target))
+            {
+                return 1;
             }
 
             var targetAdj = _adjacentKeys[target];
@@ -171,12 +183,83 @@ namespace BkTreeSpellChecker.StringMetrics
         #endregion
     }
 
+    // Using a weighted Damerau Levenshtein 
+    // setting weights to each key and its adjacent keys
     public sealed class TypoDistance : BaseBkMetricSpace
     {
+        #region properties and variables 
 
+        private KeyDistance KeyDistance { get; }
+
+        #endregion
+
+        #region ctors
+
+        public TypoDistance()
+        {
+            RateOfChange = 0.25D;
+            
+            // using a standard touch keyboard
+            KeyDistance = new KeyDistance(TouchLayoutType.Standard);
+        }
+
+        #endregion
+
+        #region public methods 
+
+        // Source: http://www.csharpstar.com/csharp-string-distance-algorithm/
+        // Code modifed from source + added cost of typo mistakes 
         public override double ComputeDistance(string target, string source)
         {
-            throw new System.NotImplementedException();
+            if (string.IsNullOrEmpty(source))
+            {
+                return string.IsNullOrEmpty(target) ? 0 : target.Length;
+            }
+
+            if (string.IsNullOrEmpty(target))
+            {
+                return source.Length;
+            }
+
+            if (source == target)
+            {
+                return 0;
+            }
+
+            var bounds = new { Height = source.Length + 1, Width = target.Length + 1 };
+            var matrix = new double[bounds.Height, bounds.Width];
+            for (var height = 0; height < bounds.Height; height++)
+            {
+                matrix[height, 0] = height;
+            }
+
+            for (var width = 0; width < bounds.Width; width++)
+            {
+                matrix[0, width] = width;
+            }
+
+            for (var height = 1; height < bounds.Height; height++)
+            {
+                for (var width = 1; width < bounds.Width; width++)
+                {
+                    //check cost of hitting adjacent key instead of key
+                    var cost = source[height - 1] == target[width - 1] ? 0 : KeyDistance.GetTypoDistance(source[height - 1], target[width - 1]);
+                    var insertion = matrix[height, width - 1] + 1;
+                    var deletion = matrix[height - 1, width] + cost;
+                    var substitution = matrix[height - 1, width - 1] + cost;
+
+                    var distance = Math.Min(insertion, Math.Min(deletion, substitution));
+                    if (height > 1 && width > 1 && source[height - 1] == target[width - 2] && source[height - 2] == target[width - 1])
+                    {
+                        distance = Math.Min(distance, matrix[height - 2, width - 2] + cost);
+                    }
+                    matrix[height, width] = distance;
+                }
+            }
+
+            return matrix[bounds.Height - 1, bounds.Width - 1];
         }
+
+        #endregion
     }
 }

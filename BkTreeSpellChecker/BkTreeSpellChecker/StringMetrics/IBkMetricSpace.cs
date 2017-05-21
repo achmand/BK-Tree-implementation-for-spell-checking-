@@ -8,5 +8,6 @@ namespace BkTreeSpellChecker.StringMetrics
     {
         double GetDistance(BkTreeNode<T> source, BkTreeNode<T> target);
         double GetDistance(T source, T target);
+        double RateOfChange { get; }
     }
 }
